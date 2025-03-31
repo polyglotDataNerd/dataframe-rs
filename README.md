@@ -89,7 +89,9 @@ if let Some(payload) = s3_payload {
 ### 4. Why Use Polars and Tokio? 
 Tokio provides an asynchronous runtime using Rust’s futures to handle non-blocking I/O, allowing thousands of concurrent connections with lightweight tasks scheduled on a small pool of threads. Its event-driven model makes it ideal for I/O-bound applications such as network servers or microservices. 
 
-In contrast, Polars is optimized for high-performance data manipulation, leveraging parallel processing to perform filtering, aggregation, and joins across multiple CPU cores. It harnesses multi-threading, SIMD optimizations, and a lazy evaluation API to execute operations in parallel while minimizing unnecessary computations. Together, Tokio and Polars enable Rust applications to efficiently scale by managing concurrent I/O-bound tasks and maximizing multi-core parallelism with a lightweight and lazy approach.
+In contrast, Polars is optimized for high-performance data manipulation, leveraging parallel processing to perform filtering, aggregation, and joins across multiple CPU cores. It harnesses multi-threading, SIMD optimizations, and a lazy evaluation API to execute operations in parallel while minimizing unnecessary computations. 
+
+Together, Tokio and Polars enable Rust applications to efficiently scale by managing concurrent I/O-bound tasks and maximizing multi-core parallelism with a lightweight and lazy approach.
 
 ## Running the Example
 
