@@ -1,0 +1,12 @@
+[package]
+name = "dataframe-rs"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+polars = { version = "0.46.0", features = ["parquet", "lazy"] }
+tokio = { version = "1.33", features = ["full"] }
+aws-sdk-s3 = "1.81.0"
+bytes = "1.5"
+aws-config = "1.6.1"
+polars-core = "0.46.0"
