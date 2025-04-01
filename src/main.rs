@@ -1,40 +1,24 @@
-use aws_config::*;
-use aws_sdk_s3::*;
-use bytes::Bytes;
-use polars::prelude::*;
-use std::io::Cursor;
-pub use tokio::io::*;
+mod io {
+    pub mod read;
+    pub mod write;
+}
 
 #[tokio::main]
-async fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
-    let config = defaults(BehaviorVersion::v2025_01_17())
-        .region(Region::new("us-east-1"))
-        .load()
-        .await;
-    let client = Client::new(&config);
-    let bucket = "s3-bucket";
-    let key = "/blockchain/transfers/erc20";
-    let s3_payload: Option<Bytes> = match client.get_object().bucket(bucket).key(key).send().await {
-        Ok(resp) => {
-            let payload = resp
-                .body
-                .collect()
-                .await
-                .map_err(|e| Box::new(e) as Box<dyn std::error::Error>)?
-                .into_bytes();
-            Some(payload)
-        }
-        Err(e) => {
-            return Err(Box::new(e) as Box<dyn std::error::Error>);
-        }
-    };
-    if let Some(payload) = s3_payload {
-        let cur = Cursor::new(payload);
-        let df = ParquetReader::new(cur).finish();
-        let show = df.unwrap();
-        let fil = show.filter(&show.column("token_value").unwrap().is_not_null());
-        println!("{}", fil.unwrap().head(Some(10)));
-    }
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let bucket = "avalanche-data-platform".to_string();
+    let key = "lakehouse/transfers-50276732ab2541e898f2ce3dd3de7055/chain_id=8888/transfer_type=ERC20/block_date=2025-02-14/20250316_172145_16485_7uqww_aa4f8d28-aff9-4fc7-b1ed-9b7ed8ff2478".to_string();
+    let local_path = "tests/fixtures/transfers.parquet".to_string();
+    let reader = io::read::Reader::new(Some(bucket), Some(key), None, Some(local_path));
+    //from s3
+    let _s3_payload = reader.s3_reader().await?;
+    //from fixture
+    let local_parq = reader.local_reader().await?;
+    let parq_reader = io::read::ParquetReader::new(local_parq);
+
+    // let parq_reader = io::read::ParquetReader::new(s3_payload);
+    let df = parq_reader.parq_reader().await?;
+    let fil = df.filter(&df.column("token_value").unwrap().is_not_null());
+    println!("{}", fil.unwrap().iter().count());
 
     Ok(())
 }
