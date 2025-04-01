@@ -48,7 +48,7 @@ You should see the version of Rust installed.
 1. **Clone the Repository:**
 
    ```bash
-   git clone https://github.com/your-username/dataframe-rs.git
+   git clone https://github.com/polyglotDataNerd/dataframe-rs.git
    cd dataframe-rs
    ```
 
